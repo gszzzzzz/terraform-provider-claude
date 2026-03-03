@@ -59,7 +59,10 @@ func TestParseAllowedInferenceGeos(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := parseAllowedInferenceGeos(tt.input)
+			result, diags := parseAllowedInferenceGeos(context.Background(), tt.input)
+			if diags.HasError() {
+				t.Fatalf("parseAllowedInferenceGeos returned errors: %v", diags)
+			}
 
 			if tt.expectNull {
 				if !result.IsNull() {
@@ -73,7 +76,7 @@ func TestParseAllowedInferenceGeos(t *testing.T) {
 			}
 
 			var elems []string
-			diags := result.ElementsAs(context.Background(), &elems, false)
+			diags = result.ElementsAs(context.Background(), &elems, false)
 			if diags.HasError() {
 				t.Fatalf("ElementsAs failed: %v", diags)
 			}
@@ -282,7 +285,10 @@ func TestFlattenWorkspace(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			model := flattenWorkspace(context.Background(), tt.workspace)
+			model, diags := flattenWorkspace(context.Background(), tt.workspace)
+			if diags.HasError() {
+				t.Fatalf("flattenWorkspace returned errors: %v", diags)
+			}
 			tt.checkModel(t, model)
 		})
 	}
@@ -304,7 +310,10 @@ func TestNormalizeAllowedGeosForAPI_TypeAssertions(t *testing.T) {
 // Verify types.List behavior for edge cases
 func TestParseAllowedInferenceGeos_ListProperties(t *testing.T) {
 	// Non-null result should have correct element type
-	result := parseAllowedInferenceGeos(json.RawMessage(`["us"]`))
+	result, diags := parseAllowedInferenceGeos(context.Background(), json.RawMessage(`["us"]`))
+	if diags.HasError() {
+		t.Fatalf("parseAllowedInferenceGeos returned errors: %v", diags)
+	}
 	if result.IsNull() {
 		t.Fatal("expected non-null list")
 	}

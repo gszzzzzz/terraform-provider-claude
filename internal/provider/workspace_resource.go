@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/gszzzzzz/terraform-provider-claude/internal/client"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -163,7 +164,11 @@ func (r *workspaceResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	state := flattenWorkspace(ctx, workspace)
+	state, diags := flattenWorkspace(ctx, workspace)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -189,7 +194,11 @@ func (r *workspaceResource) Read(ctx context.Context, req resource.ReadRequest, 
 		return
 	}
 
-	newState := flattenWorkspace(ctx, workspace)
+	newState, diags := flattenWorkspace(ctx, workspace)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
 }
 
@@ -224,7 +233,11 @@ func (r *workspaceResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	state := flattenWorkspace(ctx, workspace)
+	state, diags := flattenWorkspace(ctx, workspace)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -249,7 +262,9 @@ func (r *workspaceResource) ImportState(ctx context.Context, req resource.Import
 }
 
 // flattenWorkspace converts an API workspace to the Terraform model.
-func flattenWorkspace(_ context.Context, w *client.Workspace) workspaceResourceModel {
+func flattenWorkspace(ctx context.Context, w *client.Workspace) (workspaceResourceModel, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
 	model := workspaceResourceModel{
 		ID:           types.StringValue(w.ID),
 		Name:         types.StringValue(w.Name),
@@ -268,37 +283,37 @@ func flattenWorkspace(_ context.Context, w *client.Workspace) workspaceResourceM
 			WorkspaceGeo:        types.StringValue(w.DataResidency.WorkspaceGeo),
 			DefaultInferenceGeo: types.StringValue(w.DataResidency.DefaultInferenceGeo),
 		}
-		dr.AllowedInferenceGeos = parseAllowedInferenceGeos(w.DataResidency.AllowedInferenceGeos)
+		geoList, geoDiags := parseAllowedInferenceGeos(ctx, w.DataResidency.AllowedInferenceGeos)
+		diags.Append(geoDiags...)
+		dr.AllowedInferenceGeos = geoList
 		model.DataResidency = dr
 	}
 
-	return model
+	return model, diags
 }
 
 // parseAllowedInferenceGeos handles the union type from the API:
 // - string "unrestricted" → ["unrestricted"]
 // - array ["us", "eu"] → ["us", "eu"]
-func parseAllowedInferenceGeos(raw json.RawMessage) types.List {
+func parseAllowedInferenceGeos(ctx context.Context, raw json.RawMessage) (types.List, diag.Diagnostics) {
 	if raw == nil {
-		return types.ListNull(types.StringType)
+		return types.ListNull(types.StringType), nil
 	}
 
 	// Try as string first
 	var str string
 	if err := json.Unmarshal(raw, &str); err == nil {
 		elems := []types.String{types.StringValue(str)}
-		list, _ := types.ListValueFrom(context.Background(), types.StringType, elems)
-		return list
+		return types.ListValueFrom(ctx, types.StringType, elems)
 	}
 
 	// Try as array
 	var arr []string
 	if err := json.Unmarshal(raw, &arr); err == nil {
-		list, _ := types.ListValueFrom(context.Background(), types.StringType, arr)
-		return list
+		return types.ListValueFrom(ctx, types.StringType, arr)
 	}
 
-	return types.ListNull(types.StringType)
+	return types.ListNull(types.StringType), nil
 }
 
 // normalizeAllowedGeosForAPI converts Terraform list to API format:
