@@ -64,6 +64,9 @@ func (r *workspaceResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 			"display_color": schema.StringAttribute{
 				Computed:    true,
 				Description: "The display color of the workspace, set by the API.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"created_at": schema.StringAttribute{
 				Computed:    true,
