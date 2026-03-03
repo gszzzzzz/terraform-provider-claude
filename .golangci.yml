@@ -1,16 +1,16 @@
+version: "2"
+
 linters:
   enable:
     - errcheck
-    - gofmt
-    - gosimple
     - govet
     - ineffassign
     - staticcheck
     - unused
+  settings:
+    errcheck:
+      check-type-assertions: true
 
-linters-settings:
-  errcheck:
-    check-type-assertions: true
-
-issues:
-  exclude-use-default: false
+formatters:
+  enable:
+    - gofmt

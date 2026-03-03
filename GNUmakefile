@@ -24,6 +24,6 @@ fmt:
 	gofmt -s -w .
 
 lint:
-	golangci-lint run ./...
+	go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest run ./...
 
 .PHONY: build install test testacc fmt lint
