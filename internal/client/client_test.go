@@ -94,7 +94,10 @@ func TestDoRequest_SuccessResponse(t *testing.T) {
 			body:       `{"id":"1","name":"test"}`,
 			result:     &testStruct{},
 			checkResult: func(t *testing.T, result any) {
-				ts := result.(*testStruct)
+				ts, ok := result.(*testStruct)
+				if !ok {
+					t.Fatal("expected *testStruct")
+				}
 				if ts.ID != "1" || ts.Name != "test" {
 					t.Errorf("got %+v, want {ID:1 Name:test}", ts)
 				}
@@ -106,7 +109,10 @@ func TestDoRequest_SuccessResponse(t *testing.T) {
 			body:       `{"id":"1","name":"created"}`,
 			result:     &testStruct{},
 			checkResult: func(t *testing.T, result any) {
-				ts := result.(*testStruct)
+				ts, ok := result.(*testStruct)
+				if !ok {
+					t.Fatal("expected *testStruct")
+				}
 				if ts.ID != "1" {
 					t.Errorf("got ID=%q, want %q", ts.ID, "1")
 				}
@@ -133,7 +139,7 @@ func TestDoRequest_SuccessResponse(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tt.statusCode)
 				if tt.body != "" {
-					w.Write([]byte(tt.body))
+					_, _ = w.Write([]byte(tt.body))
 				}
 			}))
 			defer server.Close()
@@ -224,7 +230,7 @@ func TestDoRequest_ErrorResponse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tt.statusCode)
-				w.Write([]byte(tt.body))
+				_, _ = w.Write([]byte(tt.body))
 			}))
 			defer server.Close()
 

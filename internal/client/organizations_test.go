@@ -19,7 +19,7 @@ func TestGetOrganization(t *testing.T) {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(Organization{
+			_ = json.NewEncoder(w).Encode(Organization{
 				ID:   "org-1",
 				Name: "My Org",
 			})
@@ -40,7 +40,7 @@ func TestGetOrganization(t *testing.T) {
 	t.Run("401 unauthorized", func(t *testing.T) {
 		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte(`{"type":"auth_error","message":"invalid key"}`))
+			_, _ = w.Write([]byte(`{"type":"auth_error","message":"invalid key"}`))
 		})
 
 		org, err := c.GetOrganization(context.Background())

@@ -86,7 +86,7 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(ws)
+		_ = json.NewEncoder(w).Encode(ws)
 	})
 
 	// Read
@@ -100,7 +100,7 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 		if !ok {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(w).Encode(map[string]string{
+			_ = json.NewEncoder(w).Encode(map[string]string{
 				"type":    "not_found",
 				"message": "workspace not found",
 			})
@@ -108,7 +108,7 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(ws)
+		_ = json.NewEncoder(w).Encode(ws)
 	})
 
 	// Update
@@ -121,7 +121,7 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 			store.mu.Unlock()
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(w).Encode(map[string]string{
+			_ = json.NewEncoder(w).Encode(map[string]string{
 				"type":    "not_found",
 				"message": "workspace not found",
 			})
@@ -157,7 +157,7 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 		store.mu.Unlock()
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(ws)
+		_ = json.NewEncoder(w).Encode(ws)
 	})
 
 	// Archive
@@ -170,7 +170,7 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 			store.mu.Unlock()
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(w).Encode(map[string]string{
+			_ = json.NewEncoder(w).Encode(map[string]string{
 				"type":    "not_found",
 				"message": "workspace not found",
 			})
@@ -181,7 +181,7 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 			store.mu.Unlock()
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(map[string]string{
+			_ = json.NewEncoder(w).Encode(map[string]string{
 				"type":    "already_archived",
 				"message": "workspace is already archived",
 			})
@@ -193,7 +193,7 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 		store.mu.Unlock()
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(ws)
+		_ = json.NewEncoder(w).Encode(ws)
 	})
 
 	return mux

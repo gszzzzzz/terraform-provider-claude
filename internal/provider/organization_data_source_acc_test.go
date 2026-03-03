@@ -12,7 +12,7 @@ func TestAccOrganizationDataSource_basic(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /v1/organizations/me", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{
+		_ = json.NewEncoder(w).Encode(map[string]string{
 			"id":   "org-123",
 			"name": "Test Organization",
 		})

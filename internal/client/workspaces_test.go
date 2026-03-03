@@ -28,13 +28,13 @@ func TestCreateWorkspace(t *testing.T) {
 
 			body, _ := io.ReadAll(r.Body)
 			var req CreateWorkspaceRequest
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			if req.Name != "my-workspace" {
 				t.Errorf("Name = %q, want %q", req.Name, "my-workspace")
 			}
 
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(Workspace{
+			_ = json.NewEncoder(w).Encode(Workspace{
 				ID:           "ws-1",
 				Name:         "my-workspace",
 				DisplayColor: "blue",
@@ -61,7 +61,7 @@ func TestCreateWorkspace(t *testing.T) {
 		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 			body, _ := io.ReadAll(r.Body)
 			var req CreateWorkspaceRequest
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			if req.DataResidency == nil {
 				t.Fatal("expected data_residency in request")
 			}
@@ -70,7 +70,7 @@ func TestCreateWorkspace(t *testing.T) {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"id":"ws-2","name":"geo-ws","display_color":"red","created_at":"2024-01-01T00:00:00Z","data_residency":{"workspace_geo":"us","default_inference_geo":"us","allowed_inference_geos":["us"]}}`))
+			_, _ = w.Write([]byte(`{"id":"ws-2","name":"geo-ws","display_color":"red","created_at":"2024-01-01T00:00:00Z","data_residency":{"workspace_geo":"us","default_inference_geo":"us","allowed_inference_geos":["us"]}}`))
 		})
 
 		ws, err := c.CreateWorkspace(context.Background(), CreateWorkspaceRequest{
@@ -93,7 +93,7 @@ func TestCreateWorkspace(t *testing.T) {
 	t.Run("api error", func(t *testing.T) {
 		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(`{"type":"invalid_request","message":"bad"}`))
+			_, _ = w.Write([]byte(`{"type":"invalid_request","message":"bad"}`))
 		})
 
 		ws, err := c.CreateWorkspace(context.Background(), CreateWorkspaceRequest{Name: "bad"})
@@ -117,7 +117,7 @@ func TestGetWorkspace(t *testing.T) {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"id":"ws-1","name":"test","display_color":"green","created_at":"2024-01-01T00:00:00Z","archived_at":null}`))
+			_, _ = w.Write([]byte(`{"id":"ws-1","name":"test","display_color":"green","created_at":"2024-01-01T00:00:00Z","archived_at":null}`))
 		})
 
 		ws, err := c.GetWorkspace(context.Background(), "ws-1")
@@ -135,7 +135,7 @@ func TestGetWorkspace(t *testing.T) {
 	t.Run("404 not found", func(t *testing.T) {
 		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte(`{"type":"not_found","message":"workspace not found"}`))
+			_, _ = w.Write([]byte(`{"type":"not_found","message":"workspace not found"}`))
 		})
 
 		_, err := c.GetWorkspace(context.Background(), "ws-missing")
@@ -150,7 +150,7 @@ func TestGetWorkspace(t *testing.T) {
 	t.Run("archived workspace", func(t *testing.T) {
 		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"id":"ws-1","name":"archived","display_color":"gray","created_at":"2024-01-01T00:00:00Z","archived_at":"2024-06-01T00:00:00Z"}`))
+			_, _ = w.Write([]byte(`{"id":"ws-1","name":"archived","display_color":"gray","created_at":"2024-01-01T00:00:00Z","archived_at":"2024-06-01T00:00:00Z"}`))
 		})
 
 		ws, err := c.GetWorkspace(context.Background(), "ws-1")
@@ -168,7 +168,7 @@ func TestGetWorkspace(t *testing.T) {
 	t.Run("string allowed_inference_geos", func(t *testing.T) {
 		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"id":"ws-1","name":"test","display_color":"blue","created_at":"2024-01-01T00:00:00Z","data_residency":{"workspace_geo":"us","default_inference_geo":"us","allowed_inference_geos":"unrestricted"}}`))
+			_, _ = w.Write([]byte(`{"id":"ws-1","name":"test","display_color":"blue","created_at":"2024-01-01T00:00:00Z","data_residency":{"workspace_geo":"us","default_inference_geo":"us","allowed_inference_geos":"unrestricted"}}`))
 		})
 
 		ws, err := c.GetWorkspace(context.Background(), "ws-1")
@@ -191,7 +191,7 @@ func TestGetWorkspace(t *testing.T) {
 	t.Run("array allowed_inference_geos", func(t *testing.T) {
 		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"id":"ws-1","name":"test","display_color":"blue","created_at":"2024-01-01T00:00:00Z","data_residency":{"workspace_geo":"eu","default_inference_geo":"eu","allowed_inference_geos":["us","eu"]}}`))
+			_, _ = w.Write([]byte(`{"id":"ws-1","name":"test","display_color":"blue","created_at":"2024-01-01T00:00:00Z","data_residency":{"workspace_geo":"eu","default_inference_geo":"eu","allowed_inference_geos":["us","eu"]}}`))
 		})
 
 		ws, err := c.GetWorkspace(context.Background(), "ws-1")
@@ -223,13 +223,13 @@ func TestUpdateWorkspace(t *testing.T) {
 
 			body, _ := io.ReadAll(r.Body)
 			var req UpdateWorkspaceRequest
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			if req.Name != "updated" {
 				t.Errorf("Name = %q, want %q", req.Name, "updated")
 			}
 
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(Workspace{
+			_ = json.NewEncoder(w).Encode(Workspace{
 				ID:           "ws-1",
 				Name:         "updated",
 				DisplayColor: "blue",
@@ -249,7 +249,7 @@ func TestUpdateWorkspace(t *testing.T) {
 	t.Run("api error", func(t *testing.T) {
 		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(`{"type":"invalid_request","message":"bad"}`))
+			_, _ = w.Write([]byte(`{"type":"invalid_request","message":"bad"}`))
 		})
 
 		_, err := c.UpdateWorkspace(context.Background(), "ws-1", UpdateWorkspaceRequest{Name: "bad"})
@@ -271,7 +271,7 @@ func TestArchiveWorkspace(t *testing.T) {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(Workspace{
+			_ = json.NewEncoder(w).Encode(Workspace{
 				ID:           "ws-1",
 				Name:         "archived",
 				DisplayColor: "gray",
@@ -295,7 +295,7 @@ func TestArchiveWorkspace(t *testing.T) {
 	t.Run("404 not found", func(t *testing.T) {
 		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte(`{"type":"not_found","message":"not found"}`))
+			_, _ = w.Write([]byte(`{"type":"not_found","message":"not found"}`))
 		})
 
 		_, err := c.ArchiveWorkspace(context.Background(), "ws-missing")
