@@ -1,0 +1,1 @@
+terraform import claude_workspace.example wrkspc_01EXAMPLE

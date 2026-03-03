@@ -47,6 +47,23 @@ jobs:
           go-version-file: go.mod
       - uses: golangci/golangci-lint-action@v7
 
+  docs:
+    name: Docs Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: make docs
+      - name: Check docs are up to date
+        run: |
+          if [ -n "$(git diff --name-only)" ]; then
+            echo "Generated docs are out of date. Run 'make docs' and commit the changes."
+            git diff --name-only
+            exit 1
+          fi
+
   test:
     name: Unit Tests
     runs-on: ubuntu-latest

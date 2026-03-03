@@ -26,4 +26,10 @@ fmt:
 lint:
 	go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest run ./...
 
-.PHONY: build install test testacc fmt lint
+docs:
+	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@latest generate
+
+docs-lint:
+	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@latest validate
+
+.PHONY: build install test testacc fmt lint docs docs-lint

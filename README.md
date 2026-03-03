@@ -1,6 +1,6 @@
 # Terraform Provider for Claude Admin API
 
-[Claude Admin API](https://docs.anthropic.com/en/docs/administration/administration-api)를 통해 Anthropic Claude 리소스를 Terraform으로 관리합니다.
+Manage Anthropic Claude resources with Terraform via the [Claude Admin API](https://docs.anthropic.com/en/docs/administration/administration-api).
 
 ## Requirements
 
@@ -10,10 +10,12 @@
 ## Development
 
 ```bash
-make build     # 바이너리 빌드
-make install   # 로컬 Terraform 플러그인 디렉토리에 설치
-make test      # 유닛 테스트 실행
-make testacc   # 인수 테스트 실행 (TF_ACC=1)
-make fmt       # gofmt 실행
-make lint      # golangci-lint 실행
+make build     # Build binary
+make install   # Install to local Terraform plugin directory
+make test      # Run unit tests
+make testacc   # Run acceptance tests (TF_ACC=1)
+make fmt       # Run gofmt
+make lint      # Run golangci-lint
+make docs      # Generate tfplugindocs documentation
+make docs-lint # Validate tfplugindocs documentation
 ```

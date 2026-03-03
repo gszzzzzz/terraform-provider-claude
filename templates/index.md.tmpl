@@ -1,0 +1,24 @@
+---
+page_title: "claude Provider"
+description: |-
+  Terraform provider for managing Claude resources via the Admin API.
+---
+
+# claude Provider
+
+The Claude provider allows you to manage [Anthropic Claude](https://www.anthropic.com/) resources using the [Admin API](https://docs.anthropic.com/en/docs/administration/administration-api).
+
+## Authentication
+
+The provider requires an Admin API key. You can provide it in two ways:
+
+1. Set the `api_key` attribute in the provider configuration.
+2. Set the `ANTHROPIC_ADMIN_API_KEY` environment variable.
+
+~> **Note:** If both are set, the provider configuration takes precedence.
+
+## Example Usage
+
+{{ tffile "examples/provider/provider.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}

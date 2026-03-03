@@ -1,0 +1,1 @@
+terraform import claude_user.example user_01EXAMPLE
