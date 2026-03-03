@@ -108,6 +108,7 @@ func (p *claudeProvider) Resources(_ context.Context) []func() resource.Resource
 	return []func() resource.Resource{
 		NewWorkspaceResource,
 		NewUserResource,
+		NewWorkspaceMemberResource,
 	}
 }
 
@@ -115,5 +116,7 @@ func (p *claudeProvider) DataSources(_ context.Context) []func() datasource.Data
 	return []func() datasource.DataSource{
 		NewOrganizationDataSource,
 		NewUserDataSource,
+		NewWorkspaceMemberDataSource,
+		NewWorkspaceMembersDataSource,
 	}
 }
