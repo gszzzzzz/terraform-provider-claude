@@ -156,9 +156,9 @@ func ptrString(s string) *string {
 
 func TestFlattenWorkspace(t *testing.T) {
 	tests := []struct {
-		name           string
-		workspace      *client.Workspace
-		checkModel     func(t *testing.T, m workspaceResourceModel)
+		name       string
+		workspace  *client.Workspace
+		checkModel func(t *testing.T, m workspaceResourceModel)
 	}{
 		{
 			name: "basic workspace",

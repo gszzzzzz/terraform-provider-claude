@@ -24,12 +24,12 @@ type workspaceResource struct {
 }
 
 type workspaceResourceModel struct {
-	ID            types.String              `tfsdk:"id"`
-	Name          types.String              `tfsdk:"name"`
-	DisplayColor  types.String              `tfsdk:"display_color"`
-	CreatedAt     types.String              `tfsdk:"created_at"`
-	ArchivedAt    types.String              `tfsdk:"archived_at"`
-	DataResidency *dataResidencyModel       `tfsdk:"data_residency"`
+	ID            types.String        `tfsdk:"id"`
+	Name          types.String        `tfsdk:"name"`
+	DisplayColor  types.String        `tfsdk:"display_color"`
+	CreatedAt     types.String        `tfsdk:"created_at"`
+	ArchivedAt    types.String        `tfsdk:"archived_at"`
+	DataResidency *dataResidencyModel `tfsdk:"data_residency"`
 }
 
 type dataResidencyModel struct {

@@ -78,10 +78,10 @@ func TestDoRequest_SuccessResponse(t *testing.T) {
 	}
 
 	tests := []struct {
-		name       string
-		statusCode int
-		body       string
-		result     any
+		name        string
+		statusCode  int
+		body        string
+		result      any
 		checkResult func(t *testing.T, result any)
 	}{
 		{
@@ -109,17 +109,17 @@ func TestDoRequest_SuccessResponse(t *testing.T) {
 			},
 		},
 		{
-			name:       "result nil",
-			statusCode: 200,
-			body:       `{}`,
-			result:     nil,
+			name:        "result nil",
+			statusCode:  200,
+			body:        `{}`,
+			result:      nil,
 			checkResult: nil,
 		},
 		{
-			name:       "empty body with nil result",
-			statusCode: 204,
-			body:       "",
-			result:     nil,
+			name:        "empty body with nil result",
+			statusCode:  204,
+			body:        "",
+			result:      nil,
 			checkResult: nil,
 		},
 	}
@@ -148,10 +148,10 @@ func TestDoRequest_SuccessResponse(t *testing.T) {
 
 func TestDoRequest_ErrorResponse(t *testing.T) {
 	tests := []struct {
-		name           string
-		statusCode     int
-		body           string
-		checkError     func(t *testing.T, err error)
+		name       string
+		statusCode int
+		body       string
+		checkError func(t *testing.T, err error)
 	}{
 		{
 			name:       "400 JSON error",
