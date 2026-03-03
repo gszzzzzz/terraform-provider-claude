@@ -177,6 +177,17 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 			return
 		}
 
+		if ws.ArchivedAt != nil {
+			store.mu.Unlock()
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{
+				"type":    "already_archived",
+				"message": "workspace is already archived",
+			})
+			return
+		}
+
 		now := time.Now().UTC().Format(time.RFC3339)
 		ws.ArchivedAt = &now
 		store.mu.Unlock()

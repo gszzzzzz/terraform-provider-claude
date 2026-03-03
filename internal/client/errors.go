@@ -28,3 +28,12 @@ func IsNotFound(err error) bool {
 	}
 	return false
 }
+
+// IsAlreadyArchived returns true if the error indicates the resource is already archived.
+func IsAlreadyArchived(err error) bool {
+	var apiErr *APIError
+	if errors.As(err, &apiErr) {
+		return apiErr.StatusCode == http.StatusBadRequest && apiErr.Type == "already_archived"
+	}
+	return false
+}

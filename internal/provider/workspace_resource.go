@@ -256,7 +256,7 @@ func (r *workspaceResource) Delete(ctx context.Context, req resource.DeleteReque
 
 	_, err := r.client.ArchiveWorkspace(ctx, state.ID.ValueString())
 	if err != nil {
-		if client.IsNotFound(err) {
+		if client.IsNotFound(err) || client.IsAlreadyArchived(err) {
 			return
 		}
 		resp.Diagnostics.AddError("Unable to archive workspace", err.Error())

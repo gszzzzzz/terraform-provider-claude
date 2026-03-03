@@ -86,3 +86,51 @@ func TestIsNotFound(t *testing.T) {
 		})
 	}
 }
+
+func TestIsAlreadyArchived(t *testing.T) {
+	tests := []struct {
+		name     string
+		err      error
+		expected bool
+	}{
+		{
+			name:     "400 already_archived",
+			err:      &APIError{StatusCode: 400, Type: "already_archived", Message: "workspace is already archived"},
+			expected: true,
+		},
+		{
+			name:     "400 different type",
+			err:      &APIError{StatusCode: 400, Type: "invalid_request", Message: "bad"},
+			expected: false,
+		},
+		{
+			name:     "404 not found",
+			err:      &APIError{StatusCode: 404, Type: "not_found"},
+			expected: false,
+		},
+		{
+			name:     "wrapped already_archived",
+			err:      fmt.Errorf("wrap: %w", &APIError{StatusCode: 400, Type: "already_archived"}),
+			expected: true,
+		},
+		{
+			name:     "nil error",
+			err:      nil,
+			expected: false,
+		},
+		{
+			name:     "plain error",
+			err:      errors.New("some error"),
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := IsAlreadyArchived(tt.err)
+			if got != tt.expected {
+				t.Errorf("IsAlreadyArchived() = %v, want %v", got, tt.expected)
+			}
+		})
+	}
+}
