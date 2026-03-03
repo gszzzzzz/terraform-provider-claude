@@ -7,12 +7,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 const (
 	defaultBaseURL   = "https://api.anthropic.com"
 	anthropicVersion = "2023-06-01"
 	defaultUserAgent = "terraform-provider-claude"
+	defaultTimeout   = 30 * time.Second
 )
 
 // Client is the HTTP client for the Claude Admin API.
@@ -31,7 +33,7 @@ func NewClient(apiKey, baseURL string) *Client {
 	return &Client{
 		BaseURL:    baseURL,
 		APIKey:     apiKey,
-		HTTPClient: &http.Client{},
+		HTTPClient: &http.Client{Timeout: defaultTimeout},
 		UserAgent:  defaultUserAgent,
 	}
 }

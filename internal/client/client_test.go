@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestNewClient(t *testing.T) {
@@ -41,6 +42,9 @@ func TestNewClient(t *testing.T) {
 			}
 			if c.APIKey != "test-key" {
 				t.Errorf("APIKey = %q, want %q", c.APIKey, "test-key")
+			}
+			if c.HTTPClient.Timeout != 30*time.Second {
+				t.Errorf("HTTPClient.Timeout = %v, want %v", c.HTTPClient.Timeout, 30*time.Second)
 			}
 		})
 	}
