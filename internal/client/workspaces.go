@@ -9,19 +9,19 @@ import (
 
 // Workspace represents a Claude workspace.
 type Workspace struct {
-	ID            string          `json:"id"`
-	Name          string          `json:"name"`
-	DisplayColor  string          `json:"display_color"`
-	CreatedAt     string          `json:"created_at"`
-	ArchivedAt    *string         `json:"archived_at"`
-	DataResidency *DataResidency  `json:"data_residency,omitempty"`
+	ID            string         `json:"id"`
+	Name          string         `json:"name"`
+	DisplayColor  string         `json:"display_color"`
+	CreatedAt     string         `json:"created_at"`
+	ArchivedAt    *string        `json:"archived_at"`
+	DataResidency *DataResidency `json:"data_residency,omitempty"`
 }
 
 // DataResidency represents the data residency configuration for a workspace.
 type DataResidency struct {
-	WorkspaceGeo         string                   `json:"workspace_geo"`
-	DefaultInferenceGeo  string                   `json:"default_inference_geo"`
-	AllowedInferenceGeos json.RawMessage           `json:"allowed_inference_geos"`
+	WorkspaceGeo         string          `json:"workspace_geo"`
+	DefaultInferenceGeo  string          `json:"default_inference_geo"`
+	AllowedInferenceGeos json.RawMessage `json:"allowed_inference_geos"`
 }
 
 // CreateWorkspaceRequest is the request body for creating a workspace.

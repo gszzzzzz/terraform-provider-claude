@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	defaultBaseURL      = "https://api.anthropic.com"
-	anthropicVersion    = "2023-06-01"
-	defaultUserAgent    = "terraform-provider-claude"
+	defaultBaseURL   = "https://api.anthropic.com"
+	anthropicVersion = "2023-06-01"
+	defaultUserAgent = "terraform-provider-claude"
 )
 
 // Client is the HTTP client for the Claude Admin API.
