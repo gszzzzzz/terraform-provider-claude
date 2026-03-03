@@ -6,6 +6,7 @@ import (
 
 	"github.com/gszzzzzz/terraform-provider-claude/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -61,6 +62,15 @@ func (p *claudeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
+	if config.APIKey.IsUnknown() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("api_key"),
+			"Unknown API Key",
+			"The provider cannot be configured with an unknown API key. Set a known value or use the ANTHROPIC_ADMIN_API_KEY environment variable.",
+		)
+		return
+	}
+
 	apiKey := os.Getenv("ANTHROPIC_ADMIN_API_KEY")
 	if !config.APIKey.IsNull() {
 		apiKey = config.APIKey.ValueString()
@@ -70,6 +80,15 @@ func (p *claudeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		resp.Diagnostics.AddError(
 			"Missing API Key",
 			"The provider requires an API key. Set api_key in the provider configuration or set the ANTHROPIC_ADMIN_API_KEY environment variable.",
+		)
+		return
+	}
+
+	if config.BaseURL.IsUnknown() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("base_url"),
+			"Unknown Base URL",
+			"The provider cannot be configured with an unknown base URL. Set a known value or use the ANTHROPIC_BASE_URL environment variable.",
 		)
 		return
 	}
