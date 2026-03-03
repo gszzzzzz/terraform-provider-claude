@@ -103,7 +103,7 @@ func (d *workspaceMembersDataSource) Read(ctx context.Context, req datasource.Re
 
 		allMembers = append(allMembers, result.Data...)
 
-		if !result.HasMore {
+		if !result.HasMore || result.LastID == "" {
 			break
 		}
 		params.AfterID = result.LastID
