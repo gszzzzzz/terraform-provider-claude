@@ -209,6 +209,12 @@ func (r *workspaceResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
+	var currentState workspaceResourceModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &currentState)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	updateReq := client.UpdateWorkspaceRequest{
 		Name: plan.Name.ValueString(),
 	}
@@ -227,7 +233,7 @@ func (r *workspaceResource) Update(ctx context.Context, req resource.UpdateReque
 		}
 	}
 
-	workspace, err := r.client.UpdateWorkspace(ctx, plan.ID.ValueString(), updateReq)
+	workspace, err := r.client.UpdateWorkspace(ctx, currentState.ID.ValueString(), updateReq)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to update workspace", err.Error())
 		return
