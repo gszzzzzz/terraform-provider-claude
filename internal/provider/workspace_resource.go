@@ -181,6 +181,11 @@ func (r *workspaceResource) Read(ctx context.Context, req resource.ReadRequest, 
 		return
 	}
 
+	if workspace.ArchivedAt != nil {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
 	newState := flattenWorkspace(ctx, workspace)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
 }

@@ -359,3 +359,42 @@ resource "claude_workspace" "test" {
 		},
 	})
 }
+
+func TestAccWorkspaceResource_readArchivedRemovesFromState(t *testing.T) {
+	store := newWorkspaceStore()
+	mux := newWorkspaceMockMux(t, store)
+	server := testAccMockServer(t, mux)
+
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Step 1: Create workspace
+			{
+				Config: testAccProviderConfig(server.URL) + `
+resource "claude_workspace" "test" {
+  name = "will-be-archived"
+  data_residency = {
+    workspace_geo          = "us"
+    default_inference_geo  = "us"
+    allowed_inference_geos = ["us"]
+  }
+}
+`,
+				Check: resource.TestCheckResourceAttrSet("claude_workspace.test", "id"),
+			},
+			// Step 2: Archive externally, then refresh → Read removes from state
+			{
+				PreConfig: func() {
+					store.mu.Lock()
+					defer store.mu.Unlock()
+					for _, ws := range store.items {
+						now := time.Now().UTC().Format(time.RFC3339)
+						ws.ArchivedAt = &now
+					}
+				},
+				RefreshState:       true,
+				ExpectNonEmptyPlan: true,
+			},
+		},
+	})
+}
