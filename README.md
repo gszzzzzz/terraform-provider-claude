@@ -13,8 +13,8 @@
 
 | Resource | Description |
 |---|---|
-| `claude_workspace` | Workspace 생성 및 관리 |
 | `claude_user` | User 관리 |
+| `claude_workspace` | Workspace 생성 및 관리 |
 | `claude_workspace_member` | Workspace Member 관리 |
 
 ### Data Sources
