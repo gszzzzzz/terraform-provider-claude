@@ -135,7 +135,13 @@ func (r *workspaceMemberResource) Update(ctx context.Context, req resource.Updat
 		return
 	}
 
-	member, err := r.client.UpdateWorkspaceMember(ctx, plan.WorkspaceID.ValueString(), plan.UserID.ValueString(), client.UpdateWorkspaceMemberRequest{
+	var currentState workspaceMemberResourceModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &currentState)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	member, err := r.client.UpdateWorkspaceMember(ctx, currentState.WorkspaceID.ValueString(), currentState.UserID.ValueString(), client.UpdateWorkspaceMemberRequest{
 		WorkspaceRole: plan.WorkspaceRole.ValueString(),
 	})
 	if err != nil {
