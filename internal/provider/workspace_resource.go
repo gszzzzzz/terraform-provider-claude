@@ -79,6 +79,9 @@ func (r *workspaceResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 			"archived_at": schema.StringAttribute{
 				Computed:    true,
 				Description: "The timestamp when the workspace was archived, or null if active.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"data_residency": schema.SingleNestedAttribute{
 				Optional:    true,
