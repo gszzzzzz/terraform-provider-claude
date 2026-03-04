@@ -166,7 +166,7 @@ func TestDoRequest_ErrorResponse(t *testing.T) {
 		{
 			name:       "400 JSON error",
 			statusCode: 400,
-			body:       `{"type":"invalid_request","message":"bad"}`,
+			body:       `{"type":"error","error":{"type":"invalid_request_error","message":"bad"},"request_id":"req_test123"}`,
 			checkError: func(t *testing.T, err error) {
 				apiErr, ok := err.(*APIError)
 				if !ok {
@@ -175,18 +175,21 @@ func TestDoRequest_ErrorResponse(t *testing.T) {
 				if apiErr.StatusCode != 400 {
 					t.Errorf("StatusCode = %d, want 400", apiErr.StatusCode)
 				}
-				if apiErr.Type != "invalid_request" {
-					t.Errorf("Type = %q, want %q", apiErr.Type, "invalid_request")
+				if apiErr.Type != "invalid_request_error" {
+					t.Errorf("Type = %q, want %q", apiErr.Type, "invalid_request_error")
 				}
 				if apiErr.Message != "bad" {
 					t.Errorf("Message = %q, want %q", apiErr.Message, "bad")
+				}
+				if apiErr.RequestID != "req_test123" {
+					t.Errorf("RequestID = %q, want %q", apiErr.RequestID, "req_test123")
 				}
 			},
 		},
 		{
 			name:       "404 not found",
 			statusCode: 404,
-			body:       `{"type":"not_found","message":"gone"}`,
+			body:       `{"type":"error","error":{"type":"not_found_error","message":"gone"},"request_id":"req_nf1"}`,
 			checkError: func(t *testing.T, err error) {
 				if !IsNotFound(err) {
 					t.Error("expected IsNotFound to be true")
@@ -210,7 +213,7 @@ func TestDoRequest_ErrorResponse(t *testing.T) {
 		{
 			name:       "401 auth error",
 			statusCode: 401,
-			body:       `{"type":"auth_error","message":"key"}`,
+			body:       `{"type":"error","error":{"type":"authentication_error","message":"key"},"request_id":"req_auth1"}`,
 			checkError: func(t *testing.T, err error) {
 				apiErr, ok := err.(*APIError)
 				if !ok {
@@ -219,8 +222,8 @@ func TestDoRequest_ErrorResponse(t *testing.T) {
 				if apiErr.StatusCode != 401 {
 					t.Errorf("StatusCode = %d, want 401", apiErr.StatusCode)
 				}
-				if apiErr.Type != "auth_error" {
-					t.Errorf("Type = %q, want %q", apiErr.Type, "auth_error")
+				if apiErr.Type != "authentication_error" {
+					t.Errorf("Type = %q, want %q", apiErr.Type, "authentication_error")
 				}
 			},
 		},

@@ -32,6 +32,16 @@ func TestAPIError_Error(t *testing.T) {
 			err:      &APIError{StatusCode: 503, Type: "", Message: ""},
 			expected: "API error (HTTP 503): ",
 		},
+		{
+			name:     "with request_id",
+			err:      &APIError{StatusCode: 404, Type: "not_found_error", Message: "not found", RequestID: "req_123"},
+			expected: "API error (HTTP 404, not_found_error): not found (request_id: req_123)",
+		},
+		{
+			name:     "with request_id but no type",
+			err:      &APIError{StatusCode: 500, Message: "server error", RequestID: "req_456"},
+			expected: "API error (HTTP 500): server error (request_id: req_456)",
+		},
 	}
 
 	for _, tt := range tests {
