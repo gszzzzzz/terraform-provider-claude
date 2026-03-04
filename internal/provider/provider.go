@@ -119,5 +119,6 @@ func (p *claudeProvider) DataSources(_ context.Context) []func() datasource.Data
 		NewUsersDataSource,
 		NewWorkspaceMemberDataSource,
 		NewWorkspaceMembersDataSource,
+		NewWorkspacesDataSource,
 	}
 }

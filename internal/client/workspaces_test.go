@@ -259,6 +259,87 @@ func TestUpdateWorkspace(t *testing.T) {
 	})
 }
 
+func TestListWorkspaces(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodGet {
+				t.Errorf("method = %q, want GET", r.Method)
+			}
+			if r.URL.Path != "/v1/organizations/workspaces" {
+				t.Errorf("path = %q, want /v1/organizations/workspaces", r.URL.Path)
+			}
+
+			w.WriteHeader(http.StatusOK)
+			_ = json.NewEncoder(w).Encode(ListWorkspacesResponse{
+				Data: []Workspace{
+					{ID: "ws-1", Name: "Workspace 1", DisplayColor: "blue", CreatedAt: "2024-01-01T00:00:00Z"},
+					{ID: "ws-2", Name: "Workspace 2", DisplayColor: "red", CreatedAt: "2024-02-01T00:00:00Z"},
+				},
+				FirstID: "ws-1",
+				LastID:  "ws-2",
+				HasMore: false,
+			})
+		})
+
+		resp, err := c.ListWorkspaces(context.Background(), ListWorkspacesParams{})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(resp.Data) != 2 {
+			t.Fatalf("len(Data) = %d, want 2", len(resp.Data))
+		}
+		if resp.Data[0].ID != "ws-1" {
+			t.Errorf("Data[0].ID = %q, want %q", resp.Data[0].ID, "ws-1")
+		}
+		if resp.HasMore {
+			t.Errorf("HasMore = true, want false")
+		}
+	})
+
+	t.Run("with pagination params", func(t *testing.T) {
+		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Query().Get("limit") != "10" {
+				t.Errorf("limit = %q, want %q", r.URL.Query().Get("limit"), "10")
+			}
+			if r.URL.Query().Get("after_id") != "ws-1" {
+				t.Errorf("after_id = %q, want %q", r.URL.Query().Get("after_id"), "ws-1")
+			}
+
+			w.WriteHeader(http.StatusOK)
+			_ = json.NewEncoder(w).Encode(ListWorkspacesResponse{
+				Data:    []Workspace{},
+				HasMore: false,
+			})
+		})
+
+		_, err := c.ListWorkspaces(context.Background(), ListWorkspacesParams{
+			AfterID: "ws-1",
+			Limit:   10,
+		})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	})
+
+	t.Run("empty result", func(t *testing.T) {
+		c := setupTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_ = json.NewEncoder(w).Encode(ListWorkspacesResponse{
+				Data:    []Workspace{},
+				HasMore: false,
+			})
+		})
+
+		resp, err := c.ListWorkspaces(context.Background(), ListWorkspacesParams{})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(resp.Data) != 0 {
+			t.Errorf("len(Data) = %d, want 0", len(resp.Data))
+		}
+	})
+}
+
 func TestArchiveWorkspace(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		archived := "2024-06-01T00:00:00Z"
