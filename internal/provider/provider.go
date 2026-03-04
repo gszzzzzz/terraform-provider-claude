@@ -116,6 +116,7 @@ func (p *claudeProvider) DataSources(_ context.Context) []func() datasource.Data
 	return []func() datasource.DataSource{
 		NewOrganizationDataSource,
 		NewUserDataSource,
+		NewUsersDataSource,
 		NewWorkspaceMemberDataSource,
 		NewWorkspaceMembersDataSource,
 	}
