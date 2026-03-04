@@ -223,8 +223,12 @@ func (r *workspaceResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	if plan.DataResidency != nil {
+		dataResidency := &client.UpdateDataResidencyRequest{}
+		hasDataResidency := false
+
 		if !plan.DataResidency.DefaultInferenceGeo.IsNull() && !plan.DataResidency.DefaultInferenceGeo.IsUnknown() {
-			updateReq.DefaultInferenceGeo = plan.DataResidency.DefaultInferenceGeo.ValueString()
+			dataResidency.DefaultInferenceGeo = plan.DataResidency.DefaultInferenceGeo.ValueString()
+			hasDataResidency = true
 		}
 		if !plan.DataResidency.AllowedInferenceGeos.IsNull() && !plan.DataResidency.AllowedInferenceGeos.IsUnknown() {
 			var geos []string
@@ -232,7 +236,12 @@ func (r *workspaceResource) Update(ctx context.Context, req resource.UpdateReque
 			if resp.Diagnostics.HasError() {
 				return
 			}
-			updateReq.AllowedInferenceGeos = normalizeAllowedGeosForAPI(geos)
+			dataResidency.AllowedInferenceGeos = normalizeAllowedGeosForAPI(geos)
+			hasDataResidency = true
+		}
+
+		if hasDataResidency {
+			updateReq.DataResidency = dataResidency
 		}
 	}
 

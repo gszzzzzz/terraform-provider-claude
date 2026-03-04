@@ -41,7 +41,12 @@ type CreateDataResidencyRequest struct {
 
 // UpdateWorkspaceRequest is the request body for updating a workspace.
 type UpdateWorkspaceRequest struct {
-	Name                 string `json:"name,omitempty"`
+	Name          string                      `json:"name,omitempty"`
+	DataResidency *UpdateDataResidencyRequest `json:"data_residency,omitempty"`
+}
+
+// UpdateDataResidencyRequest is the data residency config for workspace updates.
+type UpdateDataResidencyRequest struct {
 	DefaultInferenceGeo  string `json:"default_inference_geo,omitempty"`
 	AllowedInferenceGeos any    `json:"allowed_inference_geos,omitempty"`
 }

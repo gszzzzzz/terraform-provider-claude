@@ -129,9 +129,11 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 		}
 
 		var body struct {
-			Name                 string          `json:"name"`
-			DefaultInferenceGeo  string          `json:"default_inference_geo"`
-			AllowedInferenceGeos json.RawMessage `json:"allowed_inference_geos"`
+			Name          string `json:"name"`
+			DataResidency *struct {
+				DefaultInferenceGeo  string          `json:"default_inference_geo"`
+				AllowedInferenceGeos json.RawMessage `json:"allowed_inference_geos"`
+			} `json:"data_residency"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			store.mu.Unlock()
@@ -142,17 +144,16 @@ func newWorkspaceMockMux(t *testing.T, store *workspaceStore) *http.ServeMux {
 		if body.Name != "" {
 			ws.Name = body.Name
 		}
-		if body.DefaultInferenceGeo != "" {
+		if body.DataResidency != nil {
 			if ws.DataResidency == nil {
 				ws.DataResidency = &mockDataResidency{}
 			}
-			ws.DataResidency.DefaultInferenceGeo = body.DefaultInferenceGeo
-		}
-		if body.AllowedInferenceGeos != nil {
-			if ws.DataResidency == nil {
-				ws.DataResidency = &mockDataResidency{}
+			if body.DataResidency.DefaultInferenceGeo != "" {
+				ws.DataResidency.DefaultInferenceGeo = body.DataResidency.DefaultInferenceGeo
 			}
-			ws.DataResidency.AllowedInferenceGeos = body.AllowedInferenceGeos
+			if body.DataResidency.AllowedInferenceGeos != nil {
+				ws.DataResidency.AllowedInferenceGeos = body.DataResidency.AllowedInferenceGeos
+			}
 		}
 		store.mu.Unlock()
 
